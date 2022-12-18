@@ -130,3 +130,12 @@ dmypy.json
 
 # .idea
 .idea
+
+# dir
+media/
+backend/users/migrations/
+backend/recipes/migrations/
+
+# files
+requests.http
+.vscode
