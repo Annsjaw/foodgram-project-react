@@ -40,8 +40,9 @@ class Recipe(models.Model):
         verbose_name='Тег',
         related_name='recipes',
     )
-    ingridients = models.ManyToManyField(
+    ingredients = models.ManyToManyField(
         Ingredient,
+        through='IngredientExtended',
         verbose_name='Ингридиенты',
         related_name='recipes',
     )
@@ -70,3 +71,21 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class IngredientExtended(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Рецепт',
+        on_delete=models.CASCADE
+    )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        verbose_name='Ингридиент',
+        on_delete=models.CASCADE
+    )
+    amount = models.PositiveIntegerField('Значение')
+
+    class Meta:
+        verbose_name = 'Ингридиент (расширеная)'
+        verbose_name_plural = 'Ингридиенты (расширеная)'
