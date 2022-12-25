@@ -1,5 +1,5 @@
 from django.contrib import admin
-from recipes.models import Ingredient, IngredientExtended, Recipe, Tag
+from recipes.models import Ingredient, IngredientRecipe, Recipe, Tag
 
 
 @admin.register(Tag)
@@ -26,7 +26,7 @@ class RecipeAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-@admin.register(IngredientExtended)
-class IngredientExtendedAdmin(admin.ModelAdmin):
+@admin.register(IngredientRecipe)
+class IngredientRecipeAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredient', 'amount', )
     empty_value_display = '-пусто-'
