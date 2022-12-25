@@ -35,7 +35,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(IngredientRecipe)
 class IngredientRecipeAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'amount', )
+    list_display = ('id', 'recipe', 'ingredient', 'amount', )
     empty_value_display = '-пусто-'
 
 
@@ -49,7 +49,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'user')
+    list_display = ('user', 'recipe')
     list_filter = ('recipe', 'user')
     search_fields = ('user', )
     empty_value_display = '-пусто-'
