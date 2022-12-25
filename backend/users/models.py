@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    '''Модель пользователя'''
+    '''Пользователи'''
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [
         'username',
@@ -18,15 +18,25 @@ class User(AbstractUser):
 
 
 class Subscribe(models.Model):
-    '''Модель подписок на автора рецепта'''
+    '''Подписоки на автора рецепта'''
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='follower')
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Пользователь'
+    )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='following')
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='На кого подписан'
+    )
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [models.UniqueConstraint(
+            fields=['user', 'author'], name='unique_names')]
 
     def __str__(self):
         return f'Пользователь {self.user} подписан на {self.author}'
-
-    class Meta:
-        constraints = [models.UniqueConstraint(
-            fields=['user', 'author'], name='unique_names')]

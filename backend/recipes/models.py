@@ -4,7 +4,7 @@ from users.models import User
 
 
 class Tag(models.Model):
-    '''Модель тегов'''
+    '''Теги'''
     name = models.CharField('Название', max_length=200, unique=True)
     color = models.CharField('Код цвета тега', max_length=7, unique=True)
     slug = models.SlugField('slug тега', unique=True)
@@ -19,7 +19,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    '''Модель ингридиентов'''
+    '''Ингридиенты'''
     name = models.CharField('Название', max_length=200)
     measurement_unit = models.CharField('Система измерения', max_length=50)
     #  TODO Можно сделать choice поле и словарь.
@@ -30,11 +30,11 @@ class Ingredient(models.Model):
         # TODO МОжно добавить уникальность полям
 
     def __str__(self):
-        return f'Ингридиент {self.name} измерения {self.measurement_unit}'
+        return f'{self.name}, {self.measurement_unit}'
 
 
 class Recipe(models.Model):
-    '''Модель рецептов'''
+    '''Рецепты'''
     tags = models.ManyToManyField(
         Tag,
         verbose_name='Тег',
@@ -75,10 +75,11 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
 
     def __str__(self):
-        return f'Название рецепта {self.name}'
+        return self.name
 
 
 class IngredientRecipe(models.Model):
+    '''Ингредиенты в рецепте'''
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
@@ -89,17 +90,18 @@ class IngredientRecipe(models.Model):
         verbose_name='Ингридиент',
         on_delete=models.CASCADE
     )
-    amount = models.PositiveIntegerField('Значение')
+    amount = models.PositiveIntegerField('Количество')
 
     class Meta:
-        verbose_name = 'Ингридиент (расширеная)'
-        verbose_name_plural = 'Ингридиенты (расширеная)'
+        verbose_name = 'Ингридиент в рецепте'
+        verbose_name_plural = 'Ингридиенты в рецепте'
 
     def __str__(self) -> str:
         return f'{self.recipe} {self.ingredient}'
 
 
 class AbstractListGoods(models.Model):
+    '''Абстрактная модель для корзины и избранного'''
     user = models.ForeignKey(
         User,
         verbose_name='Пользователь',
@@ -121,7 +123,7 @@ class AbstractListGoods(models.Model):
 
 
 class Favorite(AbstractListGoods):
-    '''Модель избранного'''
+    '''Избранное'''
 
     class Meta:
         default_related_name = 'favorite'
@@ -130,7 +132,7 @@ class Favorite(AbstractListGoods):
 
 
 class ShoppingCart(AbstractListGoods):
-    '''Модель списка покупок'''
+    '''Списк покупок'''
 
     class Meta:
         default_related_name = 'shopping_list'
