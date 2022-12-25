@@ -137,5 +137,5 @@ backend/users/migrations/
 backend/recipes/migrations/
 
 # files
-requests.http
+requests*.http
 .vscode

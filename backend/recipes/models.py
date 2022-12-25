@@ -1,12 +1,6 @@
 from django.db import models
 from users.models import User
 
-UNIT = {'kg': 'кг',
-        'g': 'г',
-        'L': 'Л',
-        'ml': 'мл'
-        }
-
 
 class Tag(models.Model):
     name = models.CharField('Название', max_length=200)
@@ -43,6 +37,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientExtended',
+        through_fields=('recipe', 'ingredient'),
         verbose_name='Ингридиенты',
         related_name='recipes',
     )
@@ -89,3 +84,6 @@ class IngredientExtended(models.Model):
     class Meta:
         verbose_name = 'Ингридиент (расширеная)'
         verbose_name_plural = 'Ингридиенты (расширеная)'
+
+    def __str__(self) -> str:
+        return f'{self.recipe} {self.ingredient}'
