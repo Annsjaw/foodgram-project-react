@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 from users.models import User
@@ -64,9 +65,12 @@ class Recipe(models.Model):
         max_length=None,
     )
     text = models.TextField('Описание рецепта')
-    cooking_time = models.PositiveIntegerField('Время приготовления в мин.',
-                                               default=0,
-                                               )
+    cooking_time = models.PositiveIntegerField(
+        'Время приготовления в мин.',
+        default=0,
+        validators=[MinValueValidator(
+            1, 'Время приготовления не может занимать меньше минуты')]
+    )
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 
     class Meta:
