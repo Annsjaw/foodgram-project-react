@@ -1,4 +1,5 @@
-from recipes.models import Ingredient, IngredientRecipe, Recipe, Tag
+from recipes.models import (Ingredient, IngredientRecipe, Recipe, Tag,
+                            Favorite, ShoppingCart)
 from rest_framework import serializers
 from users.serializers import CustomUserSerializer
 
@@ -43,6 +44,8 @@ class GetRecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     ingredients = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
@@ -51,6 +54,8 @@ class GetRecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
+            'is_favorite',
+            'is_in_shopping_cart',
             'name',
             'image',
             'text',
@@ -59,9 +64,31 @@ class GetRecipeSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_ingredients(obj):
-        """Метод получения ингредиентов для рецепта из связанной таблицы"""
+        """Метод получения ингредиентов для рецепта из связанной таблицы.
+        Т.к. self не используется, ставится декоратор @staticmethod"""
         ingredients = IngredientRecipe.objects.filter(recipe=obj)
         return IngredientInRecipeSerializer(ingredients, many=True).data
+
+    def get_is_favorite(self, obj):
+        """Метод получения статуса избранного у пользователя.
+        Если пользователь не авторизован, то отдается False
+        Для авторизованного пользователя рецепт в избранном True, нет False."""
+
+        request = self.context['request']
+        if not request.user.is_authenticated:
+            return False
+        return Favorite.objects.filter(user=request.user, recipe=obj).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        """Метод получения статуса нахождения в корзине у пользователя
+        Если пользователь не авторизован, то отдается False
+        Для авторизованного пользователя рецепт в корзине True, нет False."""
+
+        request = self.context['request']
+        if not request.user.is_authenticated:
+            return False
+        return ShoppingCart.objects.filter(
+            user=request.user, recipe=obj).exists()
 
 
 class PostRecipeSerializer(serializers.ModelSerializer):
@@ -82,6 +109,8 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         )
 
     def to_representation(self, instance):
+        """Метод переопределяет сериализер для отображения в соответствии с
+        документацией после успешного POST запроса по коду 201"""
         return GetRecipeSerializer(
             instance=instance, context=self.context).data
 

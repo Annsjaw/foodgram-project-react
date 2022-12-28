@@ -1,3 +1,4 @@
+from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             ShoppingCart, Tag)
@@ -12,7 +13,7 @@ class TagAdmin(admin.ModelAdmin):
 
 
 @admin.register(Ingredient)
-class IngridientAdmin(admin.ModelAdmin):
+class IngredientAdmin(ImportExportModelAdmin):
     list_display = ('id', 'name', 'measurement_unit', )
     search_fields = ('name', )
     list_filter = ('name', )
