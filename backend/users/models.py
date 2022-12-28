@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    '''Пользователи'''
+    """Пользователи"""
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [
         'username',
@@ -18,7 +18,7 @@ class User(AbstractUser):
 
 
 class Subscribe(models.Model):
-    '''Подписоки на автора рецепта'''
+    """Подписки на автора рецепта"""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
