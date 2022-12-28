@@ -166,3 +166,10 @@ class PostRecipeSerializer(serializers.ModelSerializer):
             )
 
         return instance
+
+
+# TODO Унаследоваться от него в рецепты
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time',)
