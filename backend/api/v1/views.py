@@ -1,9 +1,8 @@
 from recipes.models import Ingredient, Recipe, Tag
 from rest_framework import viewsets, filters
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from api.permissions import IsAuthorOrAdminPermission
+from api.permissions import AuthorOrReadOnly
 
-from .serializers import IngredientSerializer, TagSerializer, RecipeSerializer
+from .serializers import IngredientSerializer, TagSerializer, GetRecipeSerializer, PostRecipeSerializer
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -22,11 +21,13 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    serializer_class = GetRecipeSerializer
+    permission_classes = AuthorOrReadOnly,
 
-    def get_permissions(self):
-        if self.action in ('update', 'destroy'):
-            permission_classes = [IsAuthorOrAdminPermission]
-        else:
-            permission_classes = [IsAuthenticatedOrReadOnly]
-        return [permission() for permission in permission_classes]
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return GetRecipeSerializer
+        return PostRecipeSerializer

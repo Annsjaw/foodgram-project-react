@@ -5,7 +5,7 @@ from users.models import User
 
 
 class Tag(models.Model):
-    '''Теги'''
+    """Теги"""
     name = models.CharField('Название', max_length=200, unique=True)
     color = models.CharField('Код цвета тега', max_length=7, unique=True)
     slug = models.SlugField('slug тега', unique=True)
@@ -20,7 +20,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    '''Ингридиенты'''
+    """Ингридиенты"""
     name = models.CharField('Название', max_length=200)
     measurement_unit = models.CharField('Система измерения', max_length=50)
     #  TODO Можно сделать choice поле и словарь.
@@ -28,14 +28,14 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
-        # TODO МОжно добавить уникальность полям
+        # TODO Можно добавить уникальность полям
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
 
 
 class Recipe(models.Model):
-    '''Рецепты'''
+    """Рецепты"""
     tags = models.ManyToManyField(
         Tag,
         verbose_name='Тег',
@@ -83,7 +83,7 @@ class Recipe(models.Model):
 
 
 class IngredientRecipe(models.Model):
-    '''Ингредиенты в рецепте'''
+    """Ингредиенты в рецепте"""
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
@@ -105,7 +105,7 @@ class IngredientRecipe(models.Model):
 
 
 class AbstractListGoods(models.Model):
-    '''Абстрактная модель для корзины и избранного'''
+    """Абстрактная модель для корзины и избранного"""
     user = models.ForeignKey(
         User,
         verbose_name='Пользователь',
@@ -127,7 +127,7 @@ class AbstractListGoods(models.Model):
 
 
 class Favorite(AbstractListGoods):
-    '''Избранное'''
+    """Избранное"""
 
     class Meta:
         default_related_name = 'favorite'
@@ -136,7 +136,7 @@ class Favorite(AbstractListGoods):
 
 
 class ShoppingCart(AbstractListGoods):
-    '''Списк покупок'''
+    """Список покупок"""
 
     class Meta:
         default_related_name = 'shopping_list'
