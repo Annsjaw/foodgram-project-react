@@ -1,5 +1,7 @@
 from recipes.models import (Ingredient, IngredientRecipe, Recipe, Tag,
                             Favorite, ShoppingCart)
+from drf_extra_fields.fields import Base64ImageField
+from users.models import User
 from rest_framework import serializers
 from users.serializers import CustomUserSerializer
 
@@ -46,6 +48,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -73,7 +76,6 @@ class GetRecipeSerializer(serializers.ModelSerializer):
         """Метод получения статуса избранного у пользователя.
         Если пользователь не авторизован, то отдается False
         Для авторизованного пользователя рецепт в избранном True, нет False."""
-
         request = self.context['request']
         if not request.user.is_authenticated:
             return False
@@ -94,6 +96,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
 class PostRecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     ingredients = IngredientInRecipeSerializer(many=True)
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -173,3 +176,24 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time',)
+
+
+class SubscribeSerializer(CustomUserSerializer):
+    recipes = serializers.SerializerMethodField(read_only=True)
+    recipes_count = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
+
+    @staticmethod
+    def get_recipes(obj):
+        recipes = Recipe.objects.filter(author=obj)
+        serializer = ShortRecipeSerializer(recipes, many=True)
+        return serializer.data
+
+    @staticmethod
+    def get_recipes_count(obj):
+        recipes = Recipe.objects.filter(author=obj)
+        return recipes.count()
