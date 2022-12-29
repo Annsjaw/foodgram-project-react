@@ -8,6 +8,9 @@ from rest_framework import viewsets, filters, status
 from rest_framework.permissions import IsAuthenticated
 from api.permissions import AuthorOrReadOnly
 from rest_framework.decorators import action
+from .pagination import LimitPagination
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import IngredientFilter, RecipeFilter
 
 from .serializers import (IngredientSerializer, TagSerializer,
                           GetRecipeSerializer, PostRecipeSerializer,
@@ -23,8 +26,8 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = IngredientFilter
     pagination_class = None
 
 
@@ -32,8 +35,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = GetRecipeSerializer
     permission_classes = AuthorOrReadOnly,
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('author', 'tars', 'is_favorite', 'is_in_shopping_cart', )
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = RecipeFilter
+    pagination_class = LimitPagination
 
     def perform_create(self, serializer):
         """Метод автоматически добавляет текущего пользователя в поле автора
@@ -88,22 +92,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
                             f'пользователя ({request.user.username})',
                             status=status.HTTP_204_NO_CONTENT)
 
-        @action(methods=['get'], detail=False,
-                permission_classes=(IsAuthenticated,))
-        def download_shopping_cart(self, request):
-            ingredient_list = IngredientRecipe.objects.filter(
-                recipe__recipe_cart__user=request.user).values(
-                'ingredient__name', 'ingredient__measurement_unit'
-            ).annotate(sum_amount=Sum('amount'))
-            shopping_list = ['Список покупок:\n']
-            shopping_list += '\n'.join([
-                f'{ingredient["ingredient__name"]}'
-                f'({ingredient["ingredient__measurement_unit"]}) - '
-                f'{ingredient["sum_amount"]}'
-                for ingredient in ingredient_list
-            ])
-            filename = 'shopping_cart.txt'
-            response = HttpResponse(shopping_list, content_type='text/plain')
-            response[
-                'Content-Disposition'] = f'attachment; filename={filename}'
-            return response
+    @action(methods=['get'], detail=False,
+            permission_classes=(IsAuthenticated,))
+    def download_shopping_cart(self, request):
+        ingredient_list = IngredientRecipe.objects.filter(
+            recipe__shoppingcart__user=request.user).values(
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(sum_amount=Sum('amount'))
+        shopping_list = ['Список покупок:\n']
+        shopping_list += '\n'.join([
+            f'{ingredient["ingredient__name"]}'
+            f'({ingredient["ingredient__measurement_unit"]}) - '
+            f'{ingredient["sum_amount"]}'
+            for ingredient in ingredient_list
+        ])
+        filename = 'shopping_cart.txt'
+        response = HttpResponse(shopping_list, content_type='text/plain')
+        response[
+            'Content-Disposition'] = f'attachment; filename={filename}'
+        return response

@@ -4,6 +4,9 @@ from drf_extra_fields.fields import Base64ImageField
 from users.models import User
 from rest_framework import serializers
 from users.serializers import CustomUserSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -46,7 +49,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     ingredients = serializers.SerializerMethodField()
-    is_favorite = serializers.SerializerMethodField(read_only=True)
+    is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     image = Base64ImageField()
 
@@ -57,7 +60,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favorite',
+            'is_favorited',
             'is_in_shopping_cart',
             'name',
             'image',
@@ -72,7 +75,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
         ingredients = IngredientRecipe.objects.filter(recipe=obj)
         return IngredientInRecipeSerializer(ingredients, many=True).data
 
-    def get_is_favorite(self, obj):
+    def get_is_favorited(self, obj):
         """Метод получения статуса избранного у пользователя.
         Если пользователь не авторизован, то отдается False
         Для авторизованного пользователя рецепт в избранном True, нет False."""
