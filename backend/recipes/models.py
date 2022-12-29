@@ -104,41 +104,47 @@ class IngredientRecipe(models.Model):
         return f'{self.recipe} {self.ingredient}'
 
 
-class AbstractListGoods(models.Model):
-    """Абстрактная модель для корзины и избранного"""
+class Favorite(models.Model):
+    """Избранное"""
     user = models.ForeignKey(
         User,
         verbose_name='Пользователь',
+        related_name='favorite',
         on_delete=models.CASCADE
     )
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
+        related_name='favorite',
         on_delete=models.CASCADE
     )
-
-    class Meta:
-        abstract = True
-        constraints = [UniqueConstraint(
-            fields=('user', 'recipe'), name='unique_names')]
-
-    def __str__(self):
-        return f'{self.user} - {self.recipe}'
-
-
-class Favorite(AbstractListGoods):
-    """Избранное"""
 
     class Meta:
         default_related_name = 'favorite'
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
+        constraints = [UniqueConstraint(
+            fields=('user', 'recipe'), name='unique_favorite')]
 
 
-class ShoppingCart(AbstractListGoods):
+class ShoppingCart(models.Model):
     """Список покупок"""
+    user = models.ForeignKey(
+        User,
+        verbose_name='Пользователь',
+        related_name='shoppingcart',
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Рецепт',
+        related_name='shoppingcart',
+        on_delete=models.CASCADE
+    )
 
     class Meta:
         default_related_name = 'shopping_list'
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзина'
+        constraints = [UniqueConstraint(
+            fields=('user', 'recipe'), name='unique_shoppingcart')]
