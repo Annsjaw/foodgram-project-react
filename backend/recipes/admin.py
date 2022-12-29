@@ -6,7 +6,7 @@ from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'color', 'slug', )
+    list_display = ('name', 'color', 'slug', )
     search_fields = ('name', 'slug', )
     list_filter = ('name', )
     empty_value_display = '-пусто-'
@@ -22,9 +22,8 @@ class IngredientAdmin(ImportExportModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('id',
+    list_display = ('name',
                     'author',
-                    'name',
                     'image',
                     'text',
                     'cooking_time',
