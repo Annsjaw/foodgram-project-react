@@ -60,8 +60,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         избранного"""
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            Favorite.objects.create(recipe=recipe, user=request.user)
             serializer = ShortRecipeSerializer(recipe)
+            Favorite.objects.create(recipe=recipe, user=request.user)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
@@ -80,8 +80,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         таблице корзины"""
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            ShoppingCart.objects.create(recipe=recipe, user=request.user)
             serializer = ShortRecipeSerializer(recipe)
+            ShoppingCart.objects.create(recipe=recipe, user=request.user)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':

@@ -2,12 +2,29 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 from users.models import User
+from django.core.validators import RegexValidator
 
 
 class Tag(models.Model):
     """Теги"""
-    name = models.CharField('Название', max_length=200, unique=True)
-    color = models.CharField('Код цвета тега', max_length=7, unique=True)
+    name = models.CharField(
+        'Название',
+        max_length=200,
+        unique=True,
+        validators=[RegexValidator(
+            regex='^[-a-zA-Z_а-яёА-Я]+$',
+            message='Недопустимые символы в названии тега!'
+        )]
+    )
+    color = models.CharField(
+        'Код цвета тега в формате HEX',
+        max_length=7,
+        unique=True,
+        validators=[RegexValidator(
+            regex='^[#a-f0-9]+$',
+            message='Недопустимые символы в коде цвета!'
+        )]
+    )
     slug = models.SlugField('slug тега', unique=True)
 
     class Meta:
@@ -23,12 +40,10 @@ class Ingredient(models.Model):
     """Ингридиенты"""
     name = models.CharField('Название', max_length=200)
     measurement_unit = models.CharField('Система измерения', max_length=50)
-    #  TODO Можно сделать choice поле и словарь.
 
     class Meta:
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
-        # TODO Можно добавить уникальность полям
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
@@ -99,6 +114,8 @@ class IngredientRecipe(models.Model):
     class Meta:
         verbose_name = 'Ингридиент в рецепте'
         verbose_name_plural = 'Ингридиенты в рецепте'
+        constraints = [UniqueConstraint(
+            fields=('recipe', 'ingredient'), name='unique_igredientrecipe')]
 
     def __str__(self) -> str:
         return f'{self.recipe} {self.ingredient}'

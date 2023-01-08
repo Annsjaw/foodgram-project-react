@@ -15,22 +15,14 @@ class CustomUserViewSet(UserViewSet):
     @action(methods=['post', 'delete'], detail=True)
     def subscribe(self, request, id):
         author = get_object_or_404(User, id=id)
-        is_subscribed = Subscribe.objects.filter(
-            user=request.user, author=author)
 
         if request.method == 'POST':
-            if is_subscribed.exists():
-                return Response("Вы уже подписаны на этого автора",
-                                status=status.HTTP_400_BAD_REQUEST)
-            elif author == request.user:
-                return Response("Нельзя подписаться на самого себя",
-                                status=status.HTTP_400_BAD_REQUEST)
-            else:
-                Subscribe.objects.create(user=request.user, author=author)
-                serializer = SubscribeSerializer(author, context={'request': request})
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer = SubscribeSerializer(author, data=request.data, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            Subscribe.objects.create(user=request.user, author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             subscribe_user = Subscribe.objects.filter(
                 user=request.user, author=author)
             subscribe_user.delete()
