@@ -64,13 +64,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Favorite.objects.create(recipe=recipe, user=request.user)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
-        if request.method == 'DELETE':
-            favorite_recipe = Favorite.objects.filter(
-                 user=request.user, recipe=recipe)
-            favorite_recipe.delete()
-            return Response(f'Рецепт ({recipe.name}) удален из избранного '
-                            f'пользователя ({request.user.username})',
-                            status=status.HTTP_204_NO_CONTENT)
+        favorite_recipe = Favorite.objects.filter(
+             user=request.user, recipe=recipe)
+        favorite_recipe.delete()
+        return Response(f'Рецепт ({recipe.name}) удален из избранного '
+                        f'пользователя ({request.user.username})',
+                        status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['post', 'delete'], detail=True)
     def shopping_cart(self, request, pk):
@@ -84,13 +83,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ShoppingCart.objects.create(recipe=recipe, user=request.user)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
-        if request.method == 'DELETE':
-            shoppingcart_recipe = ShoppingCart.objects.filter(
-                 user=request.user, recipe=recipe)
-            shoppingcart_recipe.delete()
-            return Response(f'Рецепт ({recipe.name}) удален из корзины '
-                            f'пользователя ({request.user.username})',
-                            status=status.HTTP_204_NO_CONTENT)
+        shoppingcart_recipe = ShoppingCart.objects.filter(
+             user=request.user, recipe=recipe)
+        shoppingcart_recipe.delete()
+        return Response(f'Рецепт ({recipe.name}) удален из корзины '
+                        f'пользователя ({request.user.username})',
+                        status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['get'], detail=False,
             permission_classes=(IsAuthenticated,))
