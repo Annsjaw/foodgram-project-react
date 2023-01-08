@@ -65,7 +65,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         favorite_recipe = Favorite.objects.filter(
-             user=request.user, recipe=recipe)
+            user=request.user, recipe=recipe)
         favorite_recipe.delete()
         return Response(f'Рецепт ({recipe.name}) удален из избранного '
                         f'пользователя ({request.user.username})',
@@ -84,7 +84,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         shoppingcart_recipe = ShoppingCart.objects.filter(
-             user=request.user, recipe=recipe)
+            user=request.user, recipe=recipe)
         shoppingcart_recipe.delete()
         return Response(f'Рецепт ({recipe.name}) удален из корзины '
                         f'пользователя ({request.user.username})',
