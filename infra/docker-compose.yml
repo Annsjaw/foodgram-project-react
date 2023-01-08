@@ -8,7 +8,8 @@ services:
       - ./.env
 
   backend:
-    image: annsjaw/foodgram_backend:latest
+#    image: annsjaw/foodgram_backend:latest
+    build: ../backend
     restart: always
     volumes:
       - static_value:/app/static/
