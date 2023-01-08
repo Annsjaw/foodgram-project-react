@@ -26,12 +26,11 @@ class CustomUserViewSet(UserViewSet):
             Subscribe.objects.create(user=request.user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if request.method == 'DELETE':
-            subscribe_user = Subscribe.objects.filter(
-                user=request.user, author=author)
-            subscribe_user.delete()
-            return Response('Подписка на пользователя удалена',
-                            status=status.HTTP_204_NO_CONTENT)
+        subscribe_user = Subscribe.objects.filter(
+            user=request.user, author=author)
+        subscribe_user.delete()
+        return Response('Подписка на пользователя удалена',
+                        status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['get'], detail=False)
     def subscriptions(self, request):
