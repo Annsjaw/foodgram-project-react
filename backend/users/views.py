@@ -30,7 +30,7 @@ class CustomUserViewSet(UserViewSet):
             subscribe_user = Subscribe.objects.filter(
                 user=request.user, author=author)
             subscribe_user.delete()
-            return Response(f'Подписка на пользователя удалена',
+            return Response('Подписка на пользователя удалена',
                             status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['get'], detail=False)

@@ -64,7 +64,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Favorite.objects.create(recipe=recipe, user=request.user)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             favorite_recipe = Favorite.objects.filter(
                  user=request.user, recipe=recipe)
             favorite_recipe.delete()
@@ -84,7 +84,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ShoppingCart.objects.create(recipe=recipe, user=request.user)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             shoppingcart_recipe = ShoppingCart.objects.filter(
                  user=request.user, recipe=recipe)
             shoppingcart_recipe.delete()
