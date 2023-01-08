@@ -1,11 +1,11 @@
-from djoser.views import UserViewSet
-from users.models import User, Subscribe
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from users.serializers import CustomUserSerializer
 from api.v1.serializers import SubscribeSerializer
 from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from users.models import Subscribe, User
+from users.serializers import CustomUserSerializer
 
 
 class CustomUserViewSet(UserViewSet):
@@ -17,7 +17,11 @@ class CustomUserViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
-            serializer = SubscribeSerializer(author, data=request.data, context={'request': request})
+            serializer = SubscribeSerializer(
+                author,
+                data=request.data,
+                context={'request': request}
+            )
             serializer.is_valid(raise_exception=True)
             Subscribe.objects.create(user=request.user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -33,7 +37,7 @@ class CustomUserViewSet(UserViewSet):
     def subscriptions(self, request):
         user = self.request.user
         if user.is_anonymous:
-            return Response(status=HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         subscription_list = User.objects.filter(following__user=request.user)
         pages = self.paginate_queryset(subscription_list)
         serializer = SubscribeSerializer(

@@ -1,6 +1,6 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
-from users.models import Subscribe, User
+from users.models import User
 
 
 class CustomUserSerializer(UserSerializer):

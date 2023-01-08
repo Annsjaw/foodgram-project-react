@@ -1,10 +1,11 @@
-from recipes.models import (Ingredient, IngredientRecipe, Recipe, Tag)
-from drf_extra_fields.fields import Base64ImageField
-from users.models import User
-from rest_framework import serializers, status
-from users.serializers import CustomUserSerializer
-from django.db import transaction
 import logging
+
+from django.db import transaction
+from drf_extra_fields.fields import Base64ImageField
+from recipes.models import Ingredient, IngredientRecipe, Recipe, Tag
+from rest_framework import serializers, status
+from users.models import User
+from users.serializers import CustomUserSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -159,7 +160,7 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         instance.tags.clear()
         instance.save()
         instance.tags.set(tags)
-        self.add_ingredients(recipe, ingredients)
+        self.add_ingredients(instance, ingredients)
         return instance
 
     class Meta:
