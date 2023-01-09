@@ -25,7 +25,8 @@ INSTALLED_APPS = [
     'users',
     'recipes',
     'api',
-    'import_export'
+    'import_export',
+    'django_cleanup.apps.CleanupConfig'
 ]
 
 DJOSER = {
