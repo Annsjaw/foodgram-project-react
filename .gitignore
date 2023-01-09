@@ -133,8 +133,6 @@ dmypy.json
 
 # dir
 media/
-backend/users/migrations/
-backend/recipes/migrations/
 
 # files
 requests*.http
