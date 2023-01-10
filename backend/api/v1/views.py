@@ -13,8 +13,8 @@ from rest_framework.response import Response
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPagination
 from .serializers import (GetRecipeSerializer, IngredientSerializer,
-                          WriteRecipeSerializer, ShortRecipeSerializer,
-                          TagSerializer)
+                          ShortRecipeSerializer, TagSerializer,
+                          WriteRecipeSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
