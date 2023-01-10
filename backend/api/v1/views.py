@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPagination
 from .serializers import (GetRecipeSerializer, IngredientSerializer,
-                          PostRecipeSerializer, ShortRecipeSerializer,
+                          WriteRecipeSerializer, ShortRecipeSerializer,
                           TagSerializer)
 
 
@@ -50,7 +50,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         принимает не все поля в ingredients"""
         if self.request.method == 'GET':
             return GetRecipeSerializer
-        return PostRecipeSerializer
+        return WriteRecipeSerializer
 
     @action(methods=['post', 'delete'], detail=True)
     def favorite(self, request, pk):
