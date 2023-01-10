@@ -99,10 +99,47 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
 
     def validate(self, data):
+        """Валидация данных от клиента"""
         if not data.get('tags'):
             raise serializers.ValidationError('Поле tags отсутствует')
+        tag_list = []
+        for tag in data.get('tags'):
+            if not Tag.objects.filter(name=tag).exists():
+                raise serializers.ValidationError(
+                    f'Тега с названием {tag} не существует в базе данных'
+                )
+            if tag in tag_list:
+                raise serializers.ValidationError(
+                    'Вы не можете указывать два и более одинаковых тега'
+                )
+            tag_list.append(tag)
         if not data.get('ingredients'):
             raise serializers.ValidationError('Поле ingredients отсутствует')
+        ingredient_list = []
+        for ingredient in data.get('ingredients'):
+            ingredient_id = ingredient.get('id')
+            ingredient_amount = ingredient.get('amount')
+            if not ingredient_id:
+                raise serializers.ValidationError(
+                    'Поле id ингредиента отсутствует'
+                )
+            if not ingredient_amount:
+                raise serializers.ValidationError(
+                    'Поле amount ингредиента отсутствует'
+                )
+            if not Ingredient.objects.filter(id=ingredient_id).exists():
+                raise serializers.ValidationError(
+                    f'Ингредиента с id={ingredient_id} нет в базе данных'
+                )
+            if ingredient_id in ingredient_list:
+                raise serializers.ValidationError(
+                    'Ингредиенты в одном рецепте не могут повторяться'
+                )
+            if int(ingredient_amount) <= 0:
+                raise serializers.ValidationError(
+                    'Количество ингредиентов должно больше 0'
+                )
+            ingredient_list.append(ingredient_id)
         return data
 
     def to_representation(self, instance):
