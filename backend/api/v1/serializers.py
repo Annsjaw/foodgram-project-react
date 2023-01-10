@@ -113,34 +113,38 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
                     'Вы не можете указывать два и более одинаковых тега'
                 )
             tag_list.append(tag)
-        if not data.get('ingredients'):
+        return data
+
+    @staticmethod
+    def validate_ingredients(ingredients):
+        """Валидация поля Ingredients"""
+        if not ingredients:
             raise serializers.ValidationError('Поле ingredients отсутствует')
+
         ingredient_list = []
-        for ingredient in data.get('ingredients'):
-            ingredient_id = ingredient.get('id')
-            ingredient_amount = ingredient.get('amount')
+        for ingredient_dict in ingredients:
+            ingredient_id = ingredient_dict.get('ingredient').id
+            ingredient_amount = ingredient_dict.get('amount')
+
             if not ingredient_id:
                 raise serializers.ValidationError(
-                    'Поле id ингредиента отсутствует'
-                )
-            if not ingredient_amount:
-                raise serializers.ValidationError(
-                    'Поле amount ингредиента отсутствует'
-                )
+                    'id ингредиент не указан')
             if not Ingredient.objects.filter(id=ingredient_id).exists():
                 raise serializers.ValidationError(
-                    f'Ингредиента с id={ingredient_id} нет в базе данных'
-                )
+                    f'Ингредиента с id={ingredient_id} нет в базе данных')
             if ingredient_id in ingredient_list:
                 raise serializers.ValidationError(
-                    'Ингредиенты в одном рецепте не могут повторяться'
-                )
+                    'Ингредиенты в одном рецепте не могут повторяться')
+
+            if not ingredient_amount:
+                raise serializers.ValidationError(
+                    'Поле amount ингредиента отсутствует')
             if int(ingredient_amount) <= 0:
                 raise serializers.ValidationError(
-                    'Количество ингредиентов должно больше 0'
-                )
+                    'Количество ингредиентов должно быть больше 0')
             ingredient_list.append(ingredient_id)
-        return data
+
+        return ingredients
 
     def to_representation(self, instance):
         """Метод переопределяет сериализер для отображения в соответствии с
