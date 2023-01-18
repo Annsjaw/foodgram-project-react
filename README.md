@@ -114,3 +114,10 @@ docker-compose exec backend python manage.py createsuperuser
 ```
 http://localhost/
 ```
+
+### Автор Backend части:
+- [Дмитрий Ротанин]
+
+[//]: # (Ниже находятся справочные ссылки)
+
+   [Дмитрий Ротанин]: <https://github.com/Annsjaw>
